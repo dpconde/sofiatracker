@@ -8,9 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dpconde.sofiatracker.domain.model.EventType
+import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,5 +123,37 @@ fun EventTypeSelector(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddEventScreenPreview() {
+    SofiaTrackerTheme {
+        AddEventScreen(
+            onNavigateBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventTypeSelectorPreview() {
+    SofiaTrackerTheme {
+        EventTypeSelector(
+            selectedEventType = EventType.SLEEP,
+            onEventTypeSelected = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventTypeSelectorEmptyPreview() {
+    SofiaTrackerTheme {
+        EventTypeSelector(
+            selectedEventType = null,
+            onEventTypeSelected = {}
+        )
     }
 }

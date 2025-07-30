@@ -10,10 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dpconde.sofiatracker.domain.model.Event
 import com.dpconde.sofiatracker.domain.model.EventType
+import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,5 +141,82 @@ fun EventItem(event: Event) {
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    SofiaTrackerTheme {
+        MainScreen(
+            onNavigateToAddEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventTypeSectionPreview() {
+    SofiaTrackerTheme {
+        EventTypeSection(
+            title = "Recent Sleep Events",
+            events = listOf(
+                Event(
+                    id = 1,
+                    type = EventType.SLEEP,
+                    timestamp = LocalDateTime.now().minusHours(2),
+                    note = "Good night sleep"
+                ),
+                Event(
+                    id = 2,
+                    type = EventType.SLEEP,
+                    timestamp = LocalDateTime.now().minusHours(8),
+                    note = ""
+                )
+            ),
+            eventType = EventType.SLEEP
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventTypeSectionEmptyPreview() {
+    SofiaTrackerTheme {
+        EventTypeSection(
+            title = "Recent Eat Events",
+            events = emptyList(),
+            eventType = EventType.EAT
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventItemPreview() {
+    SofiaTrackerTheme {
+        EventItem(
+            event = Event(
+                id = 1,
+                type = EventType.SLEEP,
+                timestamp = LocalDateTime.now(),
+                note = "Had a great nap!"
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventItemNoNotePreview() {
+    SofiaTrackerTheme {
+        EventItem(
+            event = Event(
+                id = 2,
+                type = EventType.EAT,
+                timestamp = LocalDateTime.now().minusMinutes(30),
+                note = ""
+            )
+        )
     }
 }
