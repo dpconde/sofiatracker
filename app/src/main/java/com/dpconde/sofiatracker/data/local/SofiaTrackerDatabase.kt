@@ -6,17 +6,21 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
 import com.dpconde.sofiatracker.data.local.dao.EventDao
+import com.dpconde.sofiatracker.data.local.dao.SyncStateDao
 import com.dpconde.sofiatracker.data.local.entity.EventEntity
+import com.dpconde.sofiatracker.data.local.entity.SyncStateEntity
+import com.dpconde.sofiatracker.data.local.migrations.MIGRATION_1_2
 
 @Database(
-    entities = [EventEntity::class],
-    version = 1,
+    entities = [EventEntity::class, SyncStateEntity::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class SofiaTrackerDatabase : RoomDatabase() {
     
     abstract fun eventDao(): EventDao
+    abstract fun syncStateDao(): SyncStateDao
     
     companion object {
         @Volatile
@@ -28,7 +32,9 @@ abstract class SofiaTrackerDatabase : RoomDatabase() {
                     context.applicationContext,
                     SofiaTrackerDatabase::class.java,
                     "sofia_tracker_database"
-                ).build()
+                )
+                .addMigrations(MIGRATION_1_2)
+                .build()
                 INSTANCE = instance
                 instance
             }

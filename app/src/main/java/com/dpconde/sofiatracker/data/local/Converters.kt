@@ -2,6 +2,7 @@ package com.dpconde.sofiatracker.data.local
 
 import androidx.room.TypeConverter
 import com.dpconde.sofiatracker.domain.model.EventType
+import com.dpconde.sofiatracker.domain.model.SyncStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -27,5 +28,15 @@ class Converters {
     @TypeConverter
     fun toEventType(eventTypeString: String): EventType {
         return EventType.valueOf(eventTypeString)
+    }
+    
+    @TypeConverter
+    fun fromSyncStatus(syncStatus: SyncStatus): String {
+        return syncStatus.name
+    }
+    
+    @TypeConverter
+    fun toSyncStatus(syncStatusString: String): SyncStatus {
+        return SyncStatus.valueOf(syncStatusString)
     }
 }
