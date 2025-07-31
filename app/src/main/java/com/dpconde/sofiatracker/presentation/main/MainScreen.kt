@@ -3,8 +3,6 @@ package com.dpconde.sofiatracker.presentation.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,10 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -115,14 +111,6 @@ fun MainScreen(
                     WelcomeHeader()
                 }
 
-                item {
-                    StatisticsRow(
-                        sleepCount = uiState.recentSleepEvents.size,
-                        eatCount = uiState.recentEatEvents.size,
-                        poopCount = uiState.recentPoopEvents.size
-                    )
-                }
-                
                 item {
                     SyncStatusCard(
                         syncState = uiState.syncState,
@@ -243,78 +231,6 @@ fun WelcomeHeader() {
     }
 }
 
-@Composable
-fun StatisticsRow(
-    sleepCount: Int,
-    eatCount: Int,
-    poopCount: Int
-) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 4.dp)
-    ) {
-        item {
-            StatisticCard(
-                title = "Sleep",
-                count = sleepCount,
-                icon = "😴",
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
-        }
-        item {
-            StatisticCard(
-                title = "Feeding",
-                count = eatCount,
-                icon = "🍼",
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
-        }
-        item {
-            StatisticCard(
-                title = "Diaper",
-                count = poopCount,
-                icon = "💩",
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
-        }
-    }
-}
-
-@Composable
-fun StatisticCard(
-    title: String,
-    count: Int,
-    icon: String,
-    color: Color
-) {
-    Card(
-        modifier = Modifier.width(120.dp),
-        colors = CardDefaults.cardColors(containerColor = color),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = icon,
-                style = MaterialTheme.typography.headlineLarge
-            )
-            Text(
-                text = count.toString(),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-            )
-        }
-    }
-}
 
 @Composable
 fun SyncStatusCard(
