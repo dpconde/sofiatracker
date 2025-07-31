@@ -5,7 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.dpconde.sofiatracker.presentation.addevent.AddEventScreen
+import com.dpconde.sofiatracker.presentation.addevent.AddSleepScreen
+import com.dpconde.sofiatracker.presentation.addevent.AddEatScreen
+import com.dpconde.sofiatracker.presentation.addevent.AddPoopScreen
 import com.dpconde.sofiatracker.presentation.main.MainScreen
 import com.dpconde.sofiatracker.domain.model.EventType
 
@@ -30,8 +32,7 @@ fun SofiaTrackerNavigation(
         }
         
         composable(SofiaTrackerScreens.AddSleep.route) {
-            AddEventScreen(
-                eventType = EventType.SLEEP,
+            AddSleepScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -39,8 +40,7 @@ fun SofiaTrackerNavigation(
         }
         
         composable(SofiaTrackerScreens.AddEat.route) {
-            AddEventScreen(
-                eventType = EventType.EAT,
+            AddEatScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -48,8 +48,7 @@ fun SofiaTrackerNavigation(
         }
         
         composable(SofiaTrackerScreens.AddPoop.route) {
-            AddEventScreen(
-                eventType = EventType.POOP,
+            AddPoopScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

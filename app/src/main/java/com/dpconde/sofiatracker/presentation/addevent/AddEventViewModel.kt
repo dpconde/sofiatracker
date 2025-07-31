@@ -33,13 +33,17 @@ class AddEventViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(note = note)
     }
     
+    fun setCustomTimestamp(timestamp: LocalDateTime) {
+        _uiState.value = _uiState.value.copy(customTimestamp = timestamp)
+    }
+    
     fun addEvent() {
         viewModelScope.launch {
             val currentState = _uiState.value
             if (currentState.selectedEventType != null) {
                 val event = Event(
                     type = currentState.selectedEventType,
-                    timestamp = LocalDateTime.now(),
+                    timestamp = currentState.customTimestamp ?: LocalDateTime.now(),
                     note = currentState.note
                 )
                 
@@ -74,6 +78,7 @@ class AddEventViewModel @Inject constructor(
 data class AddEventUiState(
     val selectedEventType: EventType? = null,
     val note: String = "",
+    val customTimestamp: LocalDateTime? = null,
     val isLoading: Boolean = false,
     val eventAdded: Boolean = false,
     val error: String? = null
