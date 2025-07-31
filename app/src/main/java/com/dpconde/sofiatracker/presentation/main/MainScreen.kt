@@ -28,8 +28,25 @@ import com.dpconde.sofiatracker.domain.model.SyncStatus
 import com.dpconde.sofiatracker.presentation.components.CompactSyncStatusIndicator
 import com.dpconde.sofiatracker.presentation.components.SyncStatusIndicator
 import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+private fun getRelativeTime(eventTime: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val duration = Duration.between(eventTime, now)
+    
+    return when {
+        duration.toDays() >= 1 -> eventTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+        duration.toHours() >= 1 -> {
+            val hours = duration.toHours()
+            val minutes = duration.toMinutes() % 60
+            if (minutes == 0L) "${hours}h ago" else "${hours}h ${minutes}' ago"
+        }
+        duration.toMinutes() >= 1 -> "${duration.toMinutes()}' ago"
+        else -> "now"
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -471,7 +488,7 @@ fun EnhancedEventItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = event.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        text = getRelativeTime(event.timestamp),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -541,7 +558,7 @@ fun EnhancedEventItem(
                 }
                 
                 Text(
-                    text = event.timestamp.format(DateTimeFormatter.ofPattern("MMM dd")),
+                    text = "${event.timestamp.format(DateTimeFormatter.ofPattern("MMM dd"))} at ${event.timestamp.format(DateTimeFormatter.ofPattern("HH:mm"))}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
