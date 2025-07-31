@@ -37,11 +37,13 @@ class MainScreenViewModel @Inject constructor(
             combine(
                 getRecentEventsByTypeUseCase(EventType.SLEEP),
                 getRecentEventsByTypeUseCase(EventType.EAT),
+                getRecentEventsByTypeUseCase(EventType.POOP),
                 eventRepository.getSyncState()
-            ) { sleepEvents, eatEvents, syncState ->
+            ) { sleepEvents, eatEvents, poopEvents, syncState ->
                 MainScreenUiState(
                     recentSleepEvents = sleepEvents,
                     recentEatEvents = eatEvents,
+                    recentPoopEvents = poopEvents,
                     syncState = syncState,
                     isNetworkAvailable = eventRepository.isNetworkAvailable(),
                     pendingSyncCount = try { eventRepository.getPendingSyncCount() } catch (e: Exception) { 0 },
@@ -114,6 +116,7 @@ class MainScreenViewModel @Inject constructor(
 data class MainScreenUiState(
     val recentSleepEvents: List<Event> = emptyList(),
     val recentEatEvents: List<Event> = emptyList(),
+    val recentPoopEvents: List<Event> = emptyList(),
     val syncState: SyncStateEntity? = null,
     val isNetworkAvailable: Boolean = false,
     val pendingSyncCount: Int = 0,

@@ -19,6 +19,7 @@ import com.dpconde.sofiatracker.domain.model.EventType
 import com.dpconde.sofiatracker.domain.model.SyncStatus
 import com.dpconde.sofiatracker.presentation.components.CompactSyncStatusIndicator
 import com.dpconde.sofiatracker.presentation.components.SyncStatusIndicator
+import com.dpconde.sofiatracker.presentation.components.FabMenu
 import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -26,7 +27,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onNavigateToAddEvent: () -> Unit,
+    onNavigateToAddEvent: (EventType) -> Unit,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -45,11 +46,9 @@ fun MainScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToAddEvent
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Event")
-            }
+            FabMenu(
+                onEventTypeSelected = onNavigateToAddEvent
+            )
         }
     ) { paddingValues ->
         if (uiState.isLoading) {
@@ -91,6 +90,14 @@ fun MainScreen(
                         title = "Recent Eat Events",
                         events = uiState.recentEatEvents,
                         eventType = EventType.EAT
+                    )
+                }
+                
+                item {
+                    EventTypeSection(
+                        title = "Recent Poop Events",
+                        events = uiState.recentPoopEvents,
+                        eventType = EventType.POOP
                     )
                 }
             }

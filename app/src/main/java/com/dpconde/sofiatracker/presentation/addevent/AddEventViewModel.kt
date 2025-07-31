@@ -21,6 +21,10 @@ class AddEventViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AddEventUiState())
     val uiState: StateFlow<AddEventUiState> = _uiState.asStateFlow()
     
+    fun setEventType(eventType: EventType) {
+        _uiState.value = _uiState.value.copy(selectedEventType = eventType)
+    }
+    
     fun updateEventType(eventType: EventType) {
         _uiState.value = _uiState.value.copy(selectedEventType = eventType)
     }

@@ -17,10 +17,16 @@ import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventScreen(
+    eventType: EventType,
     onNavigateBack: () -> Unit,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Set the event type when the screen loads
+    LaunchedEffect(eventType) {
+        viewModel.setEventType(eventType)
+    }
     
     LaunchedEffect(uiState.eventAdded) {
         if (uiState.eventAdded) {
@@ -38,7 +44,7 @@ fun AddEventScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Event") },
+                title = { Text("Add ${getEventDisplayName(eventType)}") },
                 navigationIcon = {
                     TextButton(onClick = onNavigateBack) {
                         Text("Cancel")
@@ -54,15 +60,37 @@ fun AddEventScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Select Event Type",
-                style = MaterialTheme.typography.titleMedium
-            )
-            
-            EventTypeSelector(
-                selectedEventType = uiState.selectedEventType,
-                onEventTypeSelected = viewModel::updateEventType
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = getEventColor(eventType)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = getEventIcon(eventType),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Column {
+                        Text(
+                            text = getEventDisplayName(eventType),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            text = getEventDescription(eventType),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
             
             OutlinedTextField(
                 value = uiState.note,
@@ -85,7 +113,7 @@ fun AddEventScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Add Event")
+                    Text("Add ${getEventDisplayName(eventType)}")
                 }
             }
         }
@@ -131,8 +159,42 @@ fun EventTypeSelector(
 fun AddEventScreenPreview() {
     SofiaTrackerTheme {
         AddEventScreen(
+            eventType = EventType.SLEEP,
             onNavigateBack = {}
         )
+    }
+}
+
+private fun getEventDisplayName(eventType: EventType): String {
+    return when (eventType) {
+        EventType.SLEEP -> "Sleep"
+        EventType.EAT -> "Feeding"
+        EventType.POOP -> "Diaper Change"
+    }
+}
+
+private fun getEventIcon(eventType: EventType): String {
+    return when (eventType) {
+        EventType.SLEEP -> "😴"
+        EventType.EAT -> "🍼"
+        EventType.POOP -> "💩"
+    }
+}
+
+private fun getEventDescription(eventType: EventType): String {
+    return when (eventType) {
+        EventType.SLEEP -> "Record a sleep session"
+        EventType.EAT -> "Record a feeding session"
+        EventType.POOP -> "Record a diaper change"
+    }
+}
+
+@Composable
+private fun getEventColor(eventType: EventType): androidx.compose.ui.graphics.Color {
+    return when (eventType) {
+        EventType.SLEEP -> MaterialTheme.colorScheme.primaryContainer
+        EventType.EAT -> MaterialTheme.colorScheme.tertiaryContainer
+        EventType.POOP -> MaterialTheme.colorScheme.secondaryContainer
     }
 }
 
