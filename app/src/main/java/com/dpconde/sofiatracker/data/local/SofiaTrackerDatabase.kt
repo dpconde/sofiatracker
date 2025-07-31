@@ -10,10 +10,11 @@ import com.dpconde.sofiatracker.data.local.dao.SyncStateDao
 import com.dpconde.sofiatracker.data.local.entity.EventEntity
 import com.dpconde.sofiatracker.data.local.entity.SyncStateEntity
 import com.dpconde.sofiatracker.data.local.migrations.MIGRATION_1_2
+import com.dpconde.sofiatracker.data.local.migrations.MIGRATION_2_3
 
 @Database(
     entities = [EventEntity::class, SyncStateEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -33,7 +34,8 @@ abstract class SofiaTrackerDatabase : RoomDatabase() {
                     SofiaTrackerDatabase::class.java,
                     "sofia_tracker_database"
                 )
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

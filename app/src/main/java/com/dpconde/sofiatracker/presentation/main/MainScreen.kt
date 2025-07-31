@@ -27,7 +27,6 @@ import com.dpconde.sofiatracker.domain.model.EventType
 import com.dpconde.sofiatracker.domain.model.SyncStatus
 import com.dpconde.sofiatracker.presentation.components.CompactSyncStatusIndicator
 import com.dpconde.sofiatracker.presentation.components.SyncStatusIndicator
-import com.dpconde.sofiatracker.presentation.components.FabMenu
 import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -61,11 +60,6 @@ fun MainScreen(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 )
-            )
-        },
-        floatingActionButton = {
-            FabMenu(
-                onEventTypeSelected = onNavigateToAddEvent
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
@@ -137,7 +131,8 @@ fun MainScreen(
                         events = uiState.recentSleepEvents,
                         eventType = EventType.SLEEP,
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        onContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        onAddEvent = onNavigateToAddEvent
                     )
                 }
                 
@@ -147,8 +142,9 @@ fun MainScreen(
                         icon = "🍼",
                         events = uiState.recentEatEvents,
                         eventType = EventType.EAT,
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        onContentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        onAddEvent = onNavigateToAddEvent
                     )
                 }
                 
@@ -158,14 +154,12 @@ fun MainScreen(
                         icon = "💩",
                         events = uiState.recentPoopEvents,
                         eventType = EventType.POOP,
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        onContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        onAddEvent = onNavigateToAddEvent
                     )
                 }
                 
-                item {
-                    Spacer(modifier = Modifier.height(80.dp)) // Space for FAB
-                }
             }
         }
     }
@@ -255,7 +249,7 @@ fun StatisticsRow(
                 title = "Feeding",
                 count = eatCount,
                 icon = "🍼",
-                color = MaterialTheme.colorScheme.tertiaryContainer
+                color = MaterialTheme.colorScheme.primaryContainer
             )
         }
         item {
@@ -263,7 +257,7 @@ fun StatisticsRow(
                 title = "Diaper",
                 count = poopCount,
                 icon = "💩",
-                color = MaterialTheme.colorScheme.secondaryContainer
+                color = MaterialTheme.colorScheme.primaryContainer
             )
         }
     }
@@ -334,7 +328,8 @@ fun EnhancedEventTypeSection(
     events: List<Event>,
     eventType: EventType,
     containerColor: Color,
-    onContentColor: Color
+    onContentColor: Color,
+    onAddEvent: (EventType) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -383,21 +378,21 @@ fun EnhancedEventTypeSection(
                     }
                 }
                 
-                if (events.isNotEmpty()) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = containerColor.copy(alpha = 0.3f)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = events.size.toString(),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = onContentColor
-                        )
-                    }
+                Button(
+                    onClick = { onAddEvent(eventType) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = containerColor,
+                        contentColor = onContentColor
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.size(40.dp),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add $title",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
             
@@ -471,12 +466,35 @@ fun EnhancedEventItem(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = event.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = event.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    // Show bottle amount for EAT events
+                    if (event.type == EventType.EAT && event.bottleAmountMl != null) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = "${event.bottleAmountMl}ml left",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                }
                 
                 if (event.note.isNotBlank()) {
                     Text(

@@ -3,7 +3,6 @@ package com.dpconde.sofiatracker.presentation.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -12,8 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dpconde.sofiatracker.domain.model.EventType
@@ -35,36 +32,35 @@ fun FabMenu(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // Sub FABs
         if (isExpanded) {
+
+            FabMenuItem(
+                onClick = {
+                    onEventTypeSelected(EventType.EAT)
+                    isExpanded = false
+                },
+                text = "🍼 Eat",
+            )
+
+            FabMenuItem(
+                onClick = {
+                    onEventTypeSelected(EventType.SLEEP)
+                    isExpanded = false
+                },
+                text = "😴 Sleep",
+            )
+
             FabMenuItem(
                 onClick = { 
                     onEventTypeSelected(EventType.POOP)
                     isExpanded = false
                 },
                 text = "💩 Poop",
-                backgroundColor = MaterialTheme.colorScheme.secondary
             )
-            
-            FabMenuItem(
-                onClick = { 
-                    onEventTypeSelected(EventType.EAT)
-                    isExpanded = false
-                },
-                text = "🍼 Eat",
-                backgroundColor = MaterialTheme.colorScheme.tertiary
-            )
-            
-            FabMenuItem(
-                onClick = { 
-                    onEventTypeSelected(EventType.SLEEP)
-                    isExpanded = false
-                },
-                text = "😴 Sleep",
-                backgroundColor = MaterialTheme.colorScheme.primary
-            )
+
         }
         
         // Main FAB
@@ -85,38 +81,24 @@ fun FabMenu(
 private fun FabMenuItem(
     onClick: () -> Unit,
     text: String,
-    backgroundColor: androidx.compose.ui.graphics.Color,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Button(
+        onClick = onClick,
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 4.dp
+        ),
+        shape = MaterialTheme.shapes.small
     ) {
-        Surface(
-            shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surface,
-            shadowElevation = 4.dp,
-            modifier = Modifier.padding(end = 8.dp)
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-        }
-        
-        SmallFloatingActionButton(
-            onClick = onClick,
-            containerColor = backgroundColor,
-            shape = CircleShape
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add $text",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
-        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 

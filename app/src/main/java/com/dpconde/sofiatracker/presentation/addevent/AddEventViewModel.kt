@@ -37,6 +37,10 @@ class AddEventViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(customTimestamp = timestamp)
     }
     
+    fun updateBottleAmount(amount: Int?) {
+        _uiState.value = _uiState.value.copy(bottleAmountMl = amount)
+    }
+    
     fun addEvent() {
         viewModelScope.launch {
             val currentState = _uiState.value
@@ -44,7 +48,8 @@ class AddEventViewModel @Inject constructor(
                 val event = Event(
                     type = currentState.selectedEventType,
                     timestamp = currentState.customTimestamp ?: LocalDateTime.now(),
-                    note = currentState.note
+                    note = currentState.note,
+                    bottleAmountMl = currentState.bottleAmountMl
                 )
                 
                 _uiState.value = currentState.copy(isLoading = true)
@@ -79,6 +84,7 @@ data class AddEventUiState(
     val selectedEventType: EventType? = null,
     val note: String = "",
     val customTimestamp: LocalDateTime? = null,
+    val bottleAmountMl: Int? = null,
     val isLoading: Boolean = false,
     val eventAdded: Boolean = false,
     val error: String? = null

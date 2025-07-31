@@ -1,6 +1,8 @@
 package com.dpconde.sofiatracker.presentation.addevent
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -119,6 +121,40 @@ fun AddEatScreen(
                         text = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            
+            // Bottle Amount Section
+            Text(
+                text = "Bottle Amount Left",
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Text(
+                text = "Select amount remaining in bottle (ml)",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items((0..180 step 10).toList()) { amount ->
+                    FilterChip(
+                        onClick = { 
+                            val newAmount = if (uiState.bottleAmountMl == amount) null else amount
+                            viewModel.updateBottleAmount(newAmount)
+                        },
+                        label = { 
+                            Text("${amount}ml") 
+                        },
+                        selected = uiState.bottleAmountMl == amount,
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
                     )
                 }
             }
