@@ -29,7 +29,7 @@ class MainScreenViewModel @Inject constructor(
     init {
         loadRecentEvents()
         // Trigger sync when the main screen loads
-        triggerStartupSync()
+        //triggerStartupSync()
     }
     
     private fun loadRecentEvents() {

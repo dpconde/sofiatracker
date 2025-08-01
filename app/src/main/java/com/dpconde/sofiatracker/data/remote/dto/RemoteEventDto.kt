@@ -47,7 +47,7 @@ fun Event.toRemoteDto(): RemoteEventDto {
         timestamp = timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         note = note,
         version = version,
-        lastModified = lastSyncAttempt?.atZone(java.time.ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis(),
+        lastModified = System.currentTimeMillis(), // Always use current time to ensure proper sync detection
         bottleAmountMl = bottleAmountMl,
         sleepType = extractedSleepType,
         diaperType = extractedDiaperType

@@ -173,6 +173,9 @@ private fun RemoteEventDto.toEventEntity(localId: Long): EventEntity {
             this.timestamp, 
             java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
         ),
+        sleepType = this.sleepType,
+        diaperType = this.diaperType,
+        bottleAmountMl = this.bottleAmountMl,
         note = this.note,
         syncStatus = com.dpconde.sofiatracker.domain.model.SyncStatus.SYNCED,
         lastSyncAttempt = LocalDateTime.now(),

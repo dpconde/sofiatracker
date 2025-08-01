@@ -91,7 +91,7 @@ class SyncManager @Inject constructor(
                             val resolution = conflictResolutionStrategy.resolveConflict(
                                 localEvent = existingLocal,
                                 remoteEvent = remoteEvent,
-                                policy = ConflictResolutionPolicy.LATEST_TIMESTAMP
+                                policy = ConflictResolutionPolicy.REMOTE_WINS
                             )
                             
                             // Update with resolved version

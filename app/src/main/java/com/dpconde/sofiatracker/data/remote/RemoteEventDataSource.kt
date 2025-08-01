@@ -35,7 +35,9 @@ class RemoteEventDataSource @Inject constructor(
                 eventsCollection.document()
             }
             
-            documentRef.set(remoteEvent).await()
+            // Ensure lastModified is always updated when saving
+            val updatedRemoteEvent = remoteEvent.copy(lastModified = System.currentTimeMillis())
+            documentRef.set(updatedRemoteEvent).await()
             Result.success(documentRef.id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -50,7 +52,9 @@ class RemoteEventDataSource @Inject constructor(
                 eventsCollection.document()
             }
             
-            documentRef.set(remoteEvent).await()
+            // Ensure lastModified is always updated when saving
+            val updatedRemoteEvent = remoteEvent.copy(lastModified = System.currentTimeMillis())
+            documentRef.set(updatedRemoteEvent).await()
             Result.success(documentRef.id)
         } catch (e: Exception) {
             Result.failure(e)

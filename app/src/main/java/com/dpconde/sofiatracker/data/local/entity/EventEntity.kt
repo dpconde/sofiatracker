@@ -15,6 +15,8 @@ data class EventEntity(
     val timestamp: LocalDateTime,
     val note: String = "",
     val bottleAmountMl: Int? = null,
+    val sleepType: String? = null,
+    val diaperType: String? = null,
     val syncStatus: SyncStatus = SyncStatus.PENDING_SYNC,
     val lastSyncAttempt: LocalDateTime? = null,
     val remoteId: String? = null,
