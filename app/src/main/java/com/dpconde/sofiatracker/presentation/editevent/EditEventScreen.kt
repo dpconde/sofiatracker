@@ -31,6 +31,10 @@ enum class PoopType {
     WET, DIRTY, BOTH
 }
 
+enum class SleepType {
+    SLEEP, WAKE_UP
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditEventScreen(
@@ -235,13 +239,90 @@ fun EditEventScreen(
                     }
                     
                     EventType.SLEEP -> {
-                        // Sleep events don't need special controls beyond notes
-                        // The sleep type is determined from the note
+                        // Sleep type selection for SLEEP events
+                        Text(
+                            text = "Sleep Type",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        
+                        Column(
+                            modifier = Modifier.selectableGroup(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            SleepType.values().forEach { type ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .selectable(
+                                            selected = uiState.sleepType == type.name,
+                                            onClick = { 
+                                                val newType = if (uiState.sleepType == type.name) null else type.name
+                                                viewModel.updateSleepType(newType)
+                                            },
+                                            role = Role.RadioButton
+                                        )
+                                        .padding(vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = uiState.sleepType == type.name,
+                                        onClick = null // handled by selectable modifier
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = when (type) {
+                                            SleepType.SLEEP -> "😴 Sleep"
+                                            SleepType.WAKE_UP -> "🌅 Wake Up"
+                                        },
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+                        }
                     }
                     
                     EventType.POOP -> {
-                        // Poop events don't need special controls beyond notes
-                        // The diaper type is determined from the note
+                        // Diaper type selection for POOP events
+                        Text(
+                            text = "Diaper Type",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        
+                        Column(
+                            modifier = Modifier.selectableGroup(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            PoopType.values().forEach { type ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .selectable(
+                                            selected = uiState.diaperType == type.name,
+                                            onClick = { 
+                                                val newType = if (uiState.diaperType == type.name) null else type.name
+                                                viewModel.updateDiaperType(newType)
+                                            },
+                                            role = Role.RadioButton
+                                        )
+                                        .padding(vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = uiState.diaperType == type.name,
+                                        onClick = null // handled by selectable modifier
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = when (type) {
+                                            PoopType.WET -> "Wet Only"
+                                            PoopType.DIRTY -> "Dirty Only"
+                                            PoopType.BOTH -> "Wet & Dirty"
+                                        },
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
+                        }
                     }
                     
                     null -> { /* Handle null case */ }

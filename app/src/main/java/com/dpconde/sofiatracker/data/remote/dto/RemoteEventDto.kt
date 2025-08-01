@@ -22,24 +22,6 @@ data class RemoteEventDto(
 )
 
 fun Event.toRemoteDto(): RemoteEventDto {
-    // Extract type-specific information
-    val extractedSleepType = if (type == EventType.SLEEP) {
-        when {
-            note.startsWith("Sleep") -> "SLEEP"
-            note.startsWith("Wake up") -> "WAKE_UP"
-            else -> "SLEEP" // Default fallback
-        }
-    } else null
-    
-    val extractedDiaperType = if (type == EventType.POOP) {
-        when {
-            note.contains("wet", ignoreCase = true) && note.contains("dirty", ignoreCase = true) -> "BOTH"
-            note.contains("wet", ignoreCase = true) -> "WET"
-            note.contains("dirty", ignoreCase = true) -> "DIRTY"
-            else -> "DIRTY" // Default fallback for poop events
-        }
-    } else null
-    
     return RemoteEventDto(
         id = remoteId ?: "",
         localId = id,
@@ -49,8 +31,8 @@ fun Event.toRemoteDto(): RemoteEventDto {
         version = version,
         lastModified = System.currentTimeMillis(), // Always use current time to ensure proper sync detection
         bottleAmountMl = bottleAmountMl,
-        sleepType = extractedSleepType,
-        diaperType = extractedDiaperType
+        sleepType = sleepType,
+        diaperType = diaperType
     )
 }
 
@@ -64,6 +46,8 @@ fun RemoteEventDto.toEvent(): Event {
         syncStatus = SyncStatus.SYNCED,
         lastSyncAttempt = java.time.Instant.ofEpochMilli(lastModified).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime(),
         remoteId = id,
+        diaperType = diaperType,
+        sleepType = sleepType,
         version = version
     )
 }

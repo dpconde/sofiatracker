@@ -455,10 +455,10 @@ fun EnhancedEventItem(
                     }
                     
                     // Show sleep type for SLEEP events
-                    if (event.type == EventType.SLEEP) {
-                        val sleepType = when {
-                            event.note.startsWith("Sleep") -> "😴 Sleep"
-                            event.note.startsWith("Wake up") -> "🌅 Wake up"
+                    if (event.type == EventType.SLEEP && event.sleepType != null) {
+                        val sleepType = when (event.sleepType) {
+                            "SLEEP" -> "😴 Sleep"
+                            "WAKE_UP" -> "🌅 Wake up"
                             else -> "😴 Sleep" // Default fallback
                         }
                         Card(
@@ -476,19 +476,34 @@ fun EnhancedEventItem(
                             )
                         }
                     }
+                    
+                    // Show diaper type for POOP events
+                    if (event.type == EventType.POOP && event.diaperType != null) {
+                        val diaperType = when (event.diaperType) {
+                            "WET" -> "💧 Wet"
+                            "DIRTY" -> "💩 Dirty"
+                            "BOTH" -> "🔄 Both"
+                            else -> "💩 Dirty" // Default fallback
+                        }
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = diaperType,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 }
                 
-                // Display note, filtering out sleep type prefixes for SLEEP events
-                val displayNote = if (event.type == EventType.SLEEP) {
-                    when {
-                        event.note.startsWith("Sleep: ") -> event.note.removePrefix("Sleep: ")
-                        event.note.startsWith("Wake up: ") -> event.note.removePrefix("Wake up: ")
-                        event.note in listOf("Sleep event", "Wake up event") -> "" // Hide default notes
-                        else -> event.note
-                    }
-                } else {
-                    event.note
-                }
+                // Display note as-is since we no longer auto-populate with type info
+                val displayNote = event.note
                 
                 if (displayNote.isNotBlank()) {
                     Text(

@@ -200,23 +200,9 @@ fun AddPoopScreen(
                         .withSecond(0)
                         .withNano(0)
                     
-                    // Add diaper type to note if not already included
-                    val finalNote = if (uiState.note.isBlank()) {
-                        when (poopType) {
-                            PoopType.WET -> "Wet diaper"
-                            PoopType.DIRTY -> "Dirty diaper"
-                            PoopType.BOTH -> "Wet and dirty diaper"
-                        }
-                    } else {
-                        "${when (poopType) {
-                            PoopType.WET -> "Wet"
-                            PoopType.DIRTY -> "Dirty"
-                            PoopType.BOTH -> "Wet & Dirty"
-                        }}: ${uiState.note}"
-                    }
-                    
+                    // Set diaper type directly, don't modify note
                     viewModel.setCustomTimestamp(eventDateTime)
-                    viewModel.updateNote(finalNote)
+                    viewModel.updateDiaperType(poopType.name)
                     viewModel.addEvent()
                 },
                 enabled = !uiState.isLoading,

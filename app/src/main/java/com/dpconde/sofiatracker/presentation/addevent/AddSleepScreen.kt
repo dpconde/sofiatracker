@@ -190,21 +190,9 @@ fun AddSleepScreen(
                         .withSecond(0)
                         .withNano(0)
                     
-                    // Add sleep type to note if not already included
-                    val finalNote = if (uiState.note.isBlank()) {
-                        when (sleepEventType) {
-                            SleepEventType.SLEEP -> "Sleep event"
-                            SleepEventType.WAKE_UP -> "Wake up event"
-                        }
-                    } else {
-                        "${when (sleepEventType) {
-                            SleepEventType.SLEEP -> "Sleep"
-                            SleepEventType.WAKE_UP -> "Wake up"
-                        }}: ${uiState.note}"
-                    }
-                    
+                    // Set sleep type directly, don't modify note
                     viewModel.setCustomTimestamp(eventDateTime)
-                    viewModel.updateNote(finalNote)
+                    viewModel.updateSleepType(sleepEventType.name)
                     viewModel.addEvent()
                 },
                 enabled = !uiState.isLoading,

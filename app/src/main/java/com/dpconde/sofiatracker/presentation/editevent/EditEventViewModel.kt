@@ -38,7 +38,9 @@ class EditEventViewModel @Inject constructor(
                         eventType = event.type,
                         note = event.note,
                         timestamp = event.timestamp,
-                        bottleAmountMl = event.bottleAmountMl
+                        bottleAmountMl = event.bottleAmountMl,
+                        diaperType = event.diaperType,
+                        sleepType = event.sleepType
                     )
                 } else {
                     _uiState.value = _uiState.value.copy(
@@ -67,6 +69,14 @@ class EditEventViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(bottleAmountMl = amount)
     }
     
+    fun updateDiaperType(diaperType: String?) {
+        _uiState.value = _uiState.value.copy(diaperType = diaperType)
+    }
+    
+    fun updateSleepType(sleepType: String?) {
+        _uiState.value = _uiState.value.copy(sleepType = sleepType)
+    }
+    
     fun saveEvent() {
         viewModelScope.launch {
             val currentState = _uiState.value
@@ -79,7 +89,9 @@ class EditEventViewModel @Inject constructor(
                     val updatedEvent = originalEvent.copy(
                         note = currentState.note,
                         timestamp = currentState.timestamp,
-                        bottleAmountMl = currentState.bottleAmountMl
+                        bottleAmountMl = currentState.bottleAmountMl,
+                        diaperType = currentState.diaperType,
+                        sleepType = currentState.sleepType
                     )
                     
                     updateEventUseCase(updatedEvent)
@@ -141,6 +153,8 @@ data class EditEventUiState(
     val note: String = "",
     val timestamp: LocalDateTime = LocalDateTime.now(),
     val bottleAmountMl: Int? = null,
+    val diaperType: String? = null,
+    val sleepType: String? = null,
     val eventSaved: Boolean = false,
     val eventDeleted: Boolean = false,
     val error: String? = null

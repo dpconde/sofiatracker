@@ -41,6 +41,14 @@ class AddEventViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(bottleAmountMl = amount)
     }
     
+    fun updateDiaperType(diaperType: String?) {
+        _uiState.value = _uiState.value.copy(diaperType = diaperType)
+    }
+    
+    fun updateSleepType(sleepType: String?) {
+        _uiState.value = _uiState.value.copy(sleepType = sleepType)
+    }
+    
     fun addEvent() {
         viewModelScope.launch {
             val currentState = _uiState.value
@@ -49,7 +57,9 @@ class AddEventViewModel @Inject constructor(
                     type = currentState.selectedEventType,
                     timestamp = currentState.customTimestamp ?: LocalDateTime.now(),
                     note = currentState.note,
-                    bottleAmountMl = currentState.bottleAmountMl
+                    bottleAmountMl = currentState.bottleAmountMl,
+                    diaperType = currentState.diaperType,
+                    sleepType = currentState.sleepType
                 )
                 
                 _uiState.value = currentState.copy(isLoading = true)
@@ -85,6 +95,8 @@ data class AddEventUiState(
     val note: String = "",
     val customTimestamp: LocalDateTime? = null,
     val bottleAmountMl: Int? = null,
+    val diaperType: String? = null,
+    val sleepType: String? = null,
     val isLoading: Boolean = false,
     val eventAdded: Boolean = false,
     val error: String? = null
