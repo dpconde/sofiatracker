@@ -1,6 +1,7 @@
 package com.dpconde.sofiatracker.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -46,4 +47,10 @@ interface EventDao {
     
     @Update
     suspend fun updateEvent(event: EventEntity)
+    
+    @Delete
+    suspend fun deleteEvent(event: EventEntity)
+    
+    @Query("SELECT * FROM events WHERE id = :eventId")
+    suspend fun getEventById(eventId: Long): EventEntity?
 }

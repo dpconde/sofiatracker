@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface EventRepository {
     suspend fun insertEvent(event: Event)
+    suspend fun updateEvent(event: Event)
+    suspend fun deleteEvent(event: Event)
+    suspend fun getEventById(eventId: Long): Event?
     fun getAllEvents(): Flow<List<Event>>
     fun getEventsByType(type: EventType): Flow<List<Event>>
     fun getLastTwoEventsByType(type: EventType): Flow<List<Event>>

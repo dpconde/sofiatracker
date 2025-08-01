@@ -41,6 +41,33 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
     
+    override suspend fun updateEvent(event: Event) {
+        // Mark as pending sync and update locally
+        val eventWithSyncStatus = event.copy(
+            syncStatus = SyncStatus.PENDING_SYNC
+        )
+        eventDao.updateEvent(eventWithSyncStatus.toEntity())
+        
+        // Try to sync immediately if network is available
+        if (networkManager.isNetworkAvailable()) {
+            syncManager.syncSingleEvent(event.id)
+        }
+    }
+    
+    override suspend fun deleteEvent(event: Event) {
+        eventDao.deleteEvent(event.toEntity())
+        
+        // Delete from remote if it was synced before
+        if (event.remoteId != null && networkManager.isNetworkAvailable()) {
+            // Note: This would need to be handled by the sync manager
+            // For now, we'll just delete locally
+        }
+    }
+    
+    override suspend fun getEventById(eventId: Long): Event? {
+        return eventDao.getEventById(eventId)?.toDomain()
+    }
+    
     override fun getAllEvents(): Flow<List<Event>> {
         return eventDao.getAllEvents().map { entities ->
             entities.map { it.toDomain() }

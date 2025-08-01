@@ -51,6 +51,7 @@ private fun getRelativeTime(eventTime: LocalDateTime): String {
 @Composable
 fun MainScreen(
     onNavigateToAddEvent: (EventType) -> Unit,
+    onNavigateToEditEvent: (Long) -> Unit,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -154,7 +155,8 @@ fun MainScreen(
                         eventType = EventType.SLEEP,
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onAddEvent = onNavigateToAddEvent
+                        onAddEvent = onNavigateToAddEvent,
+                        onEventClick = onNavigateToEditEvent
                     )
                 }
                 
@@ -166,7 +168,8 @@ fun MainScreen(
                         eventType = EventType.EAT,
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onAddEvent = onNavigateToAddEvent
+                        onAddEvent = onNavigateToAddEvent,
+                        onEventClick = onNavigateToEditEvent
                     )
                 }
                 
@@ -178,7 +181,8 @@ fun MainScreen(
                         eventType = EventType.POOP,
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         onContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        onAddEvent = onNavigateToAddEvent
+                        onAddEvent = onNavigateToAddEvent,
+                        onEventClick = onNavigateToEditEvent
                     )
                 }
                 
@@ -279,7 +283,8 @@ fun EnhancedEventTypeSection(
     eventType: EventType,
     containerColor: Color,
     onContentColor: Color,
-    onAddEvent: (EventType) -> Unit
+    onAddEvent: (EventType) -> Unit,
+    onEventClick: (Long) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -376,7 +381,8 @@ fun EnhancedEventTypeSection(
                     events.take(3).forEach { event ->
                         EnhancedEventItem(
                             event = event,
-                            containerColor = containerColor
+                            containerColor = containerColor,
+                            onClick = { onEventClick(event.id) }
                         )
                     }
                     
@@ -397,14 +403,17 @@ fun EnhancedEventTypeSection(
 @Composable
 fun EnhancedEventItem(
     event: Event,
-    containerColor: Color
+    containerColor: Color,
+    onClick: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = containerColor.copy(alpha = 0.15f)
         ),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth(),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
@@ -586,7 +595,8 @@ fun EventItem(event: Event) {
 fun MainScreenPreview() {
     SofiaTrackerTheme {
         MainScreen(
-            onNavigateToAddEvent = {}
+            onNavigateToAddEvent = {},
+            onNavigateToEditEvent = {}
         )
     }
 }
