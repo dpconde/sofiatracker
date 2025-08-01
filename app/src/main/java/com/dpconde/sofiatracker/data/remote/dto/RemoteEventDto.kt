@@ -46,7 +46,7 @@ fun Event.toRemoteDto(): RemoteEventDto {
         timestamp = timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         note = note,
         version = version,
-        lastModified = System.currentTimeMillis(),
+        lastModified = lastSyncAttempt?.atZone(java.time.ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis(),
         bottleAmountMl = bottleAmountMl,
         sleepType = extractedSleepType,
         diaperType = extractedDiaperType
@@ -55,13 +55,13 @@ fun Event.toRemoteDto(): RemoteEventDto {
 
 fun RemoteEventDto.toEvent(): Event {
     return Event(
-        id = localId,
+        id = 0, // Let Room auto-generate the local ID
         type = EventType.valueOf(type),
         timestamp = LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         note = note,
         bottleAmountMl = bottleAmountMl,
         syncStatus = SyncStatus.SYNCED,
-        lastSyncAttempt = LocalDateTime.now(),
+        lastSyncAttempt = java.time.Instant.ofEpochMilli(lastModified).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime(),
         remoteId = id,
         version = version
     )

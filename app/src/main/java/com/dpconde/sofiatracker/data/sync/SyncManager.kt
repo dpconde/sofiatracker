@@ -50,14 +50,15 @@ class SyncManager @Inject constructor(
             // Step 2: Get remote events modified since last sync
             val lastSync = syncStateDao.getSyncStateOnce()?.lastSuccessfulSync
             val lastSyncTimestamp = lastSync?.let { 
-                it.toEpochSecond(java.time.ZoneOffset.UTC) * 1000 
+                it.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
             } ?: 0L
             
-            emit(SyncResult.Progress("Downloading remote changes"))
+            emit(SyncResult.Progress("Downloading remote changes since $lastSyncTimestamp"))
             
             val remoteResult = remoteDataSource.getEventsModifiedAfter(lastSyncTimestamp)
             if (remoteResult.isSuccess) {
                 val remoteEvents = remoteResult.getOrThrow()
+                emit(SyncResult.Progress("Found ${remoteEvents.size} remote events to process"))
                 
                 for (remoteEvent in remoteEvents) {
                     // Check if we have a local version
@@ -66,6 +67,7 @@ class SyncManager @Inject constructor(
                     
                     if (existingLocal == null) {
                         // New remote event - insert locally
+                        emit(SyncResult.Progress("Inserting new remote event ${remoteEvent.id}"))
                         val localEvent = remoteEvent.toEvent()
                         eventDao.insertEvent(localEvent.toEntity())
                     } else {
