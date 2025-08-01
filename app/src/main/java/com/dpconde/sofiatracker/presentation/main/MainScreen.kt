@@ -503,7 +503,7 @@ fun EnhancedEventItem(
                     .size(8.dp)
                     .background(
                         when (event.syncStatus) {
-                            SyncStatus.SYNCED -> MaterialTheme.colorScheme.primary
+                            SyncStatus.SYNCED -> Color(0xFF4CAF50)
                             SyncStatus.PENDING_SYNC -> MaterialTheme.colorScheme.secondary
                             SyncStatus.SYNC_ERROR -> MaterialTheme.colorScheme.error
                             SyncStatus.SYNCING -> MaterialTheme.colorScheme.tertiary
