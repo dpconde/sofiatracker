@@ -42,6 +42,21 @@ class RemoteEventDataSource @Inject constructor(
         }
     }
     
+    suspend fun saveRemoteEvent(remoteEvent: RemoteEventDto): Result<String> {
+        return try {
+            val documentRef = if (remoteEvent.id.isNotEmpty()) {
+                eventsCollection.document(remoteEvent.id)
+            } else {
+                eventsCollection.document()
+            }
+            
+            documentRef.set(remoteEvent).await()
+            Result.success(documentRef.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     suspend fun getEvent(remoteId: String): Result<RemoteEventDto> {
         return try {
             val snapshot = eventsCollection.document(remoteId).get().await()

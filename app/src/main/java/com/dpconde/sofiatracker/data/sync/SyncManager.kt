@@ -61,6 +61,19 @@ class SyncManager @Inject constructor(
                 emit(SyncResult.Progress("Found ${remoteEvents.size} remote events to process"))
                 
                 for (remoteEvent in remoteEvents) {
+                    // Check if remote event is marked as deleted
+                    if (remoteEvent.deleted) {
+                        // Handle deleted event
+                        val existingLocal = eventDao.getEventsBySyncStatus(SyncStatus.SYNCED)
+                            .find { it.remoteId == remoteEvent.id }
+                        
+                        if (existingLocal != null) {
+                            emit(SyncResult.Progress("Deleting remote-deleted event ${remoteEvent.id}"))
+                            eventDao.deleteEvent(existingLocal)
+                        }
+                        continue
+                    }
+                    
                     // Check if we have a local version
                     val existingLocal = eventDao.getEventsBySyncStatus(SyncStatus.SYNCED)
                         .find { it.remoteId == remoteEvent.id }
@@ -88,6 +101,7 @@ class SyncManager @Inject constructor(
                             emit(SyncResult.Progress("Conflict resolved: ${resolution.conflictReason}"))
                         } else {
                             // No conflict detected, update with remote version
+                            emit(SyncResult.Progress("Updating existing event ${remoteEvent.id}"))
                             val localEvent = remoteEvent.toEvent()
                             eventDao.updateEvent(localEvent.copy(id = existingLocal.id).toEntity())
                         }
@@ -137,6 +151,31 @@ class SyncManager @Inject constructor(
             } else {
                 eventDao.updateSyncStatus(eventId, SyncStatus.SYNC_ERROR)
                 Result.failure(result.exceptionOrNull() ?: Exception("Sync failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun deleteRemoteEvent(remoteId: String): Result<Unit> {
+        return try {
+            // Soft delete: mark as deleted in remote instead of hard delete
+            val getResult = remoteDataSource.getEvent(remoteId)
+            if (getResult.isSuccess) {
+                val remoteEvent = getResult.getOrThrow()
+                val deletedEvent = remoteEvent.copy(
+                    deleted = true,
+                    lastModified = System.currentTimeMillis()
+                )
+                // Use the new saveRemoteEvent to update with deleted flag
+                val saveResult = remoteDataSource.saveRemoteEvent(deletedEvent)
+                if (saveResult.isSuccess) {
+                    Result.success(Unit)
+                } else {
+                    Result.failure(saveResult.exceptionOrNull() ?: Exception("Failed to mark event as deleted"))
+                }
+            } else {
+                Result.failure(getResult.exceptionOrNull() ?: Exception("Event not found"))
             }
         } catch (e: Exception) {
             Result.failure(e)

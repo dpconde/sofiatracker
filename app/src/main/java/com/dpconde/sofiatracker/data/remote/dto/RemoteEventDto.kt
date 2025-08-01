@@ -14,6 +14,7 @@ data class RemoteEventDto(
     val note: String = "",
     val version: Int = 1,
     val lastModified: Long = System.currentTimeMillis(),
+    val deleted: Boolean = false, // For soft deletes
     // Event type specific fields
     val bottleAmountMl: Int? = null, // For EAT events
     val sleepType: String? = null, // For SLEEP events (SLEEP or WAKE_UP)

@@ -55,13 +55,14 @@ class EventRepositoryImpl @Inject constructor(
     }
     
     override suspend fun deleteEvent(event: Event) {
-        eventDao.deleteEvent(event.toEntity())
-        
-        // Delete from remote if it was synced before
+        // Delete from remote first if it was synced
         if (event.remoteId != null && networkManager.isNetworkAvailable()) {
-            // Note: This would need to be handled by the sync manager
-            // For now, we'll just delete locally
+            // Delete from remote via sync manager
+            syncManager.deleteRemoteEvent(event.remoteId)
         }
+        
+        // Delete locally
+        eventDao.deleteEvent(event.toEntity())
     }
     
     override suspend fun getEventById(eventId: Long): Event? {
