@@ -13,10 +13,32 @@ data class RemoteEventDto(
     val timestamp: String = "",
     val note: String = "",
     val version: Int = 1,
-    val lastModified: Long = System.currentTimeMillis()
+    val lastModified: Long = System.currentTimeMillis(),
+    // Event type specific fields
+    val bottleAmountMl: Int? = null, // For EAT events
+    val sleepType: String? = null, // For SLEEP events (SLEEP or WAKE_UP)
+    val diaperType: String? = null // For POOP events (WET, DIRTY, BOTH)
 )
 
 fun Event.toRemoteDto(): RemoteEventDto {
+    // Extract type-specific information
+    val extractedSleepType = if (type == EventType.SLEEP) {
+        when {
+            note.startsWith("Sleep") -> "SLEEP"
+            note.startsWith("Wake up") -> "WAKE_UP"
+            else -> "SLEEP" // Default fallback
+        }
+    } else null
+    
+    val extractedDiaperType = if (type == EventType.POOP) {
+        when {
+            note.contains("wet", ignoreCase = true) && note.contains("dirty", ignoreCase = true) -> "BOTH"
+            note.contains("wet", ignoreCase = true) -> "WET"
+            note.contains("dirty", ignoreCase = true) -> "DIRTY"
+            else -> "DIRTY" // Default fallback for poop events
+        }
+    } else null
+    
     return RemoteEventDto(
         id = remoteId ?: "",
         localId = id,
@@ -24,7 +46,10 @@ fun Event.toRemoteDto(): RemoteEventDto {
         timestamp = timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         note = note,
         version = version,
-        lastModified = System.currentTimeMillis()
+        lastModified = System.currentTimeMillis(),
+        bottleAmountMl = bottleAmountMl,
+        sleepType = extractedSleepType,
+        diaperType = extractedDiaperType
     )
 }
 
@@ -34,6 +59,7 @@ fun RemoteEventDto.toEvent(): Event {
         type = EventType.valueOf(type),
         timestamp = LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
         note = note,
+        bottleAmountMl = bottleAmountMl,
         syncStatus = SyncStatus.SYNCED,
         lastSyncAttempt = LocalDateTime.now(),
         remoteId = id,
