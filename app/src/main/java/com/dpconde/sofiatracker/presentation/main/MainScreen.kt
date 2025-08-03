@@ -43,7 +43,7 @@ private fun getRelativeTime(eventTime: LocalDateTime): String {
             if (minutes == 0L) "${hours}h ago" else "${hours}h ${minutes}' ago"
         }
         duration.toMinutes() >= 1 -> "${duration.toMinutes()}' ago"
-        else -> "now"
+        else -> "Now"
     }
 }
 
@@ -51,7 +51,7 @@ private fun getRelativeTime(eventTime: LocalDateTime): String {
 @Composable
 fun MainScreen(
     onNavigateToAddEvent: (EventType) -> Unit,
-    onNavigateToEditEvent: (Long) -> Unit,
+    onNavigateToEditEvent: (Event) -> Unit,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -284,7 +284,7 @@ fun EnhancedEventTypeSection(
     containerColor: Color,
     onContentColor: Color,
     onAddEvent: (EventType) -> Unit,
-    onEventClick: (Long) -> Unit
+    onEventClick: (Event) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -382,7 +382,7 @@ fun EnhancedEventTypeSection(
                         EnhancedEventItem(
                             event = event,
                             containerColor = containerColor,
-                            onClick = { onEventClick(event.id) }
+                            onClick = { onEventClick(event) }
                         )
                     }
                     

@@ -3,6 +3,8 @@ package com.dpconde.sofiatracker.presentation.addevent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,21 +27,50 @@ enum class PoopType {
 @Composable
 fun AddPoopScreen(
     onNavigateBack: () -> Unit,
+    editEventId: Long? = null,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var poopType by remember { mutableStateOf(PoopType.DIRTY) }
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    val isEditMode = editEventId != null
     
-    // Set the event type when the screen loads
-    LaunchedEffect(Unit) {
-        viewModel.setEventType(EventType.POOP)
+    // Initialize the screen - either for adding or editing
+    LaunchedEffect(editEventId) {
+        if (editEventId != null) {
+            viewModel.loadEventForEditing(editEventId)
+        } else {
+            viewModel.setEventType(EventType.POOP)
+        }
+    }
+    
+    // Update selectedTime and poopType when editing event is loaded
+    LaunchedEffect(uiState.customTimestamp, uiState.diaperType) {
+        uiState.customTimestamp?.let { timestamp ->
+            selectedTime = timestamp.toLocalTime()
+        }
+        uiState.diaperType?.let { type ->
+            poopType = when (type) {
+                "WET" -> PoopType.WET
+                "DIRTY" -> PoopType.DIRTY
+                "BOTH" -> PoopType.BOTH
+                else -> PoopType.DIRTY
+            }
+        }
     }
     
     LaunchedEffect(uiState.eventAdded) {
         if (uiState.eventAdded) {
             viewModel.clearEventAdded()
+            onNavigateBack()
+        }
+    }
+    
+    LaunchedEffect(uiState.eventDeleted) {
+        if (uiState.eventDeleted) {
+            viewModel.clearEventDeleted()
             onNavigateBack()
         }
     }
@@ -53,10 +84,26 @@ fun AddPoopScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Diaper Change") },
+                title = { 
+                    Text(if (isEditMode) "Edit Diaper Change" else "Add Diaper Change") 
+                },
                 navigationIcon = {
                     TextButton(onClick = onNavigateBack) {
                         Text("Cancel")
+                    }
+                },
+                actions = {
+                    if (isEditMode) {
+                        IconButton(
+                            onClick = { showDeleteConfirmation = true },
+                            enabled = !uiState.isLoading
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete event",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )
@@ -190,31 +237,85 @@ fun AddPoopScreen(
             
             Spacer(modifier = Modifier.weight(1f))
             
-            // Add Event Button
-            Button(
-                onClick = {
-                    // Create event with selected time
-                    val eventDateTime = LocalDateTime.now()
-                        .withHour(selectedTime.hour)
-                        .withMinute(selectedTime.minute)
-                        .withSecond(0)
-                        .withNano(0)
+            // Action Buttons
+            if (isEditMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { showDeleteConfirmation = true },
+                        enabled = !uiState.isLoading,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Delete")
+                        }
+                    }
                     
-                    // Set diaper type directly, don't modify note
-                    viewModel.setCustomTimestamp(eventDateTime)
-                    viewModel.updateDiaperType(poopType.name)
-                    viewModel.addEvent()
-                },
-                enabled = !uiState.isLoading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Add Diaper Change")
+                    Button(
+                        onClick = {
+                            val eventDateTime = LocalDateTime.now()
+                                .withYear(uiState.customTimestamp?.year?: LocalDateTime.now().year)
+                                .withMonth(uiState.customTimestamp?.monthValue?: LocalDateTime.now().monthValue)
+                                .withDayOfMonth(uiState.customTimestamp?.dayOfMonth?: LocalDateTime.now().dayOfMonth)
+                                .withHour(selectedTime.hour)
+                                .withMinute(selectedTime.minute)
+                                .withSecond(0)
+                                .withNano(0)
+                            
+                            viewModel.setCustomTimestamp(eventDateTime)
+                            viewModel.updateDiaperType(poopType.name)
+                            viewModel.updateEvent()
+                        },
+                        enabled = !uiState.isLoading,
+                        modifier = Modifier.weight(2f)
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text("Save Changes")
+                        }
+                    }
+                }
+            } else {
+                Button(
+                    onClick = {
+                        // Create event with selected time
+                        val eventDateTime = LocalDateTime.now()
+                            .withHour(selectedTime.hour)
+                            .withMinute(selectedTime.minute)
+                            .withSecond(0)
+                            .withNano(0)
+                        
+                        // Set diaper type directly, don't modify note
+                        viewModel.setCustomTimestamp(eventDateTime)
+                        viewModel.updateDiaperType(poopType.name)
+                        viewModel.addEvent()
+                    },
+                    enabled = !uiState.isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Add Diaper Change")
+                    }
                 }
             }
         }
@@ -230,6 +331,35 @@ fun AddPoopScreen(
             },
             onDismiss = {
                 showTimePicker = false
+            }
+        )
+    }
+    
+    // Delete Confirmation Dialog
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Event") },
+            text = { 
+                Text("Are you sure you want to delete this diaper change event? This action cannot be undone.") 
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        viewModel.deleteEvent()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
             }
         )
     }

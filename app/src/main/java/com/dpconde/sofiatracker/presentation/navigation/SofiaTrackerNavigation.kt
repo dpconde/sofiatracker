@@ -10,7 +10,6 @@ import androidx.navigation.navArgument
 import com.dpconde.sofiatracker.presentation.addevent.AddSleepScreen
 import com.dpconde.sofiatracker.presentation.addevent.AddEatScreen
 import com.dpconde.sofiatracker.presentation.addevent.AddPoopScreen
-import com.dpconde.sofiatracker.presentation.editevent.EditEventScreen
 import com.dpconde.sofiatracker.presentation.main.MainScreen
 import com.dpconde.sofiatracker.domain.model.EventType
 
@@ -31,8 +30,12 @@ fun SofiaTrackerNavigation(
                         EventType.POOP -> navController.navigate(SofiaTrackerScreens.AddPoop.route)
                     }
                 },
-                onNavigateToEditEvent = { eventId ->
-                    navController.navigate(SofiaTrackerScreens.EditEvent.createRoute(eventId))
+                onNavigateToEditEvent = { event ->
+                    when (event.type) {
+                        EventType.SLEEP -> navController.navigate(SofiaTrackerScreens.EditSleep.createRoute(event.id))
+                        EventType.EAT -> navController.navigate(SofiaTrackerScreens.EditEat.createRoute(event.id))
+                        EventType.POOP -> navController.navigate(SofiaTrackerScreens.EditPoop.createRoute(event.id))
+                    }
                 }
             )
         }
@@ -62,15 +65,41 @@ fun SofiaTrackerNavigation(
         }
         
         composable(
-            route = SofiaTrackerScreens.EditEvent.route,
+            route = SofiaTrackerScreens.EditSleep.route,
             arguments = listOf(navArgument("eventId") { type = NavType.LongType })
         ) { backStackEntry ->
             val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
-            EditEventScreen(
-                eventId = eventId,
+            AddSleepScreen(
                 onNavigateBack = {
                     navController.popBackStack()
-                }
+                },
+                editEventId = eventId
+            )
+        }
+        
+        composable(
+            route = SofiaTrackerScreens.EditEat.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
+            AddEatScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                editEventId = eventId
+            )
+        }
+        
+        composable(
+            route = SofiaTrackerScreens.EditPoop.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L
+            AddPoopScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                editEventId = eventId
             )
         }
     }
@@ -81,7 +110,13 @@ sealed class SofiaTrackerScreens(val route: String) {
     object AddSleep : SofiaTrackerScreens("add_sleep")
     object AddEat : SofiaTrackerScreens("add_eat")
     object AddPoop : SofiaTrackerScreens("add_poop")
-    object EditEvent : SofiaTrackerScreens("edit_event/{eventId}") {
-        fun createRoute(eventId: Long) = "edit_event/$eventId"
+    object EditSleep : SofiaTrackerScreens("edit_sleep/{eventId}") {
+        fun createRoute(eventId: Long) = "edit_sleep/$eventId"
+    }
+    object EditEat : SofiaTrackerScreens("edit_eat/{eventId}") {
+        fun createRoute(eventId: Long) = "edit_eat/$eventId"
+    }
+    object EditPoop : SofiaTrackerScreens("edit_poop/{eventId}") {
+        fun createRoute(eventId: Long) = "edit_poop/$eventId"
     }
 }

@@ -3,6 +3,8 @@ package com.dpconde.sofiatracker.presentation.addevent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,20 +22,41 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddEatScreen(
     onNavigateBack: () -> Unit,
+    editEventId: Long? = null,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTime by remember { mutableStateOf(LocalTime.now()) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    val isEditMode = editEventId != null
     
-    // Set the event type when the screen loads
-    LaunchedEffect(Unit) {
-        viewModel.setEventType(EventType.EAT)
+    // Initialize the screen - either for adding or editing
+    LaunchedEffect(editEventId) {
+        if (editEventId != null) {
+            viewModel.loadEventForEditing(editEventId)
+        } else {
+            viewModel.setEventType(EventType.EAT)
+        }
+    }
+    
+    // Update selectedTime when editing event is loaded
+    LaunchedEffect(uiState.customTimestamp) {
+        uiState.customTimestamp?.let { timestamp ->
+            selectedTime = timestamp.toLocalTime()
+        }
     }
     
     LaunchedEffect(uiState.eventAdded) {
         if (uiState.eventAdded) {
             viewModel.clearEventAdded()
+            onNavigateBack()
+        }
+    }
+    
+    LaunchedEffect(uiState.eventDeleted) {
+        if (uiState.eventDeleted) {
+            viewModel.clearEventDeleted()
             onNavigateBack()
         }
     }
@@ -47,10 +70,26 @@ fun AddEatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Feeding") },
+                title = { 
+                    Text(if (isEditMode) "Edit Feeding" else "Add Feeding") 
+                },
                 navigationIcon = {
                     TextButton(onClick = onNavigateBack) {
                         Text("Cancel")
+                    }
+                },
+                actions = {
+                    if (isEditMode) {
+                        IconButton(
+                            onClick = { showDeleteConfirmation = true },
+                            enabled = !uiState.isLoading
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete event",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             )
@@ -171,29 +210,81 @@ fun AddEatScreen(
             
             Spacer(modifier = Modifier.weight(1f))
             
-            // Add Event Button
-            Button(
-                onClick = {
-                    // Create event with selected time
-                    val eventDateTime = LocalDateTime.now()
-                        .withHour(selectedTime.hour)
-                        .withMinute(selectedTime.minute)
-                        .withSecond(0)
-                        .withNano(0)
+            // Action Buttons
+            if (isEditMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { showDeleteConfirmation = true },
+                        enabled = !uiState.isLoading,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Delete")
+                        }
+                    }
                     
-                    viewModel.setCustomTimestamp(eventDateTime)
-                    viewModel.addEvent()
-                },
-                enabled = !uiState.isLoading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Add Feeding")
+                    Button(
+                        onClick = {
+                            val eventDateTime = LocalDateTime.now()
+                                .withYear(uiState.customTimestamp?.year?: LocalDateTime.now().year)
+                                .withMonth(uiState.customTimestamp?.monthValue?: LocalDateTime.now().monthValue)
+                                .withDayOfMonth(uiState.customTimestamp?.dayOfMonth?: LocalDateTime.now().dayOfMonth)
+                                .withHour(selectedTime.hour)
+                                .withMinute(selectedTime.minute)
+                                .withSecond(0)
+                                .withNano(0)
+                            
+                            viewModel.setCustomTimestamp(eventDateTime)
+                            viewModel.updateEvent()
+                        },
+                        enabled = !uiState.isLoading,
+                        modifier = Modifier.weight(2f)
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text("Save Changes")
+                        }
+                    }
+                }
+            } else {
+                Button(
+                    onClick = {
+                        val eventDateTime = LocalDateTime.now()
+                            .withHour(selectedTime.hour)
+                            .withMinute(selectedTime.minute)
+                            .withSecond(0)
+                            .withNano(0)
+                        
+                        viewModel.setCustomTimestamp(eventDateTime)
+                        viewModel.addEvent()
+                    },
+                    enabled = !uiState.isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Add Feeding")
+                    }
                 }
             }
         }
@@ -209,6 +300,35 @@ fun AddEatScreen(
             },
             onDismiss = {
                 showTimePicker = false
+            }
+        )
+    }
+    
+    // Delete Confirmation Dialog
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete Event") },
+            text = { 
+                Text("Are you sure you want to delete this feeding event? This action cannot be undone.") 
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteConfirmation = false
+                        viewModel.deleteEvent()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
             }
         )
     }
