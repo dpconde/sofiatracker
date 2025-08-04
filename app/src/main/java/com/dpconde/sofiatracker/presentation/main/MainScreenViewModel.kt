@@ -55,37 +55,6 @@ class MainScreenViewModel @Inject constructor(
         }
     }
     
-    private fun triggerStartupSync() {
-        viewModelScope.launch {
-            // Wait a bit for the app to fully initialize
-            delay(1000)
-            
-            // Only sync if network is available to avoid unnecessary errors
-            if (eventRepository.isNetworkAvailable()) {
-                try {
-                    eventRepository.syncAllEvents().collect { result ->
-                        // Log sync progress but don't show UI errors on startup
-                        when (result) {
-                            is SyncResult.Success -> {
-                                // Sync completed successfully - UI will update via state flow
-                            }
-                            is SyncResult.Error -> {
-                                // Log error but don't interrupt user experience
-                                result.exception.printStackTrace()
-                            }
-                            else -> {
-                                // Other states (InProgress, Progress) - UI will show via state flow
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Silently handle startup sync errors
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-    
     fun triggerSync() {
         viewModelScope.launch {
             try {

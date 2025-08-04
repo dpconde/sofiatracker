@@ -7,11 +7,13 @@ import com.dpconde.sofiatracker.data.local.entity.toDomain
 import com.dpconde.sofiatracker.data.local.entity.toEntity
 import com.dpconde.sofiatracker.data.network.NetworkConnectivityManager
 import com.dpconde.sofiatracker.data.sync.SyncManager
+import com.dpconde.sofiatracker.data.sync.SyncResult
 import com.dpconde.sofiatracker.domain.model.Event
 import com.dpconde.sofiatracker.domain.model.EventType
 import com.dpconde.sofiatracker.domain.model.SyncStatus
 import com.dpconde.sofiatracker.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -87,9 +89,12 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
     
-    override suspend fun syncAllEvents(): Flow<com.dpconde.sofiatracker.data.sync.SyncResult> {
-        return syncManager.performFullSync()
+    override suspend fun syncAllEvents() = if (networkManager.isNetworkAvailable()) {
+        syncManager.performFullSync()
+    } else {
+        flowOf(SyncResult.Error(Exception("Network not available")))
     }
+
     
     override fun getSyncState(): Flow<SyncStateEntity?> {
         return syncManager.getSyncState()
