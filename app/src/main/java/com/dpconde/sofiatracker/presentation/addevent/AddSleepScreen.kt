@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -83,27 +85,13 @@ fun AddSleepScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
-                    Text(if (isEditMode) "Edit Sleep Event" else "Add Sleep Event") 
-                },
+                title = { },
                 navigationIcon = {
-                    TextButton(onClick = onNavigateBack) {
-                        Text("Cancel")
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate back")
                     }
-                },
-                actions = {
-                    if (isEditMode) {
-                        IconButton(
-                            onClick = { showDeleteConfirmation = true },
-                            enabled = !uiState.isLoading
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete event",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
+
                 }
             )
         }
@@ -140,7 +128,7 @@ fun AddSleepScreen(
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Track sleep and wake-up times",
+                            text = "Record sleep and wake-up times",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )
@@ -153,28 +141,37 @@ fun AddSleepScreen(
                 text = "Event Type",
                 style = MaterialTheme.typography.titleMedium
             )
-            
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectableGroup(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+            Column(
+                modifier = Modifier.selectableGroup(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SleepEventType.entries.forEach { type ->
                     val isSelected = sleepEventType == type
-                    FilterChip(
-                        onClick = { sleepEventType = type },
-                        label = {
-                            Text(
-                                text = when (type) {
-                                    SleepEventType.SLEEP -> "😴 Sleep"
-                                    SleepEventType.WAKE_UP -> "🌅 Wake Up"
-                                }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = isSelected,
+                                onClick = { sleepEventType = type },
+                                role = Role.RadioButton
                             )
-                        },
-                        selected = isSelected,
-                        modifier = Modifier.weight(1f)
-                    )
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = null
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = when (type) {
+                                SleepEventType.SLEEP -> "😴 Sleep"
+                                SleepEventType.WAKE_UP -> "🌅 Wake Up"
+                            },
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
             }
             

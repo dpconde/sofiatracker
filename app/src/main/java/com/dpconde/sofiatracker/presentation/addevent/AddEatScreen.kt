@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -70,26 +71,11 @@ fun AddEatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
-                    Text(if (isEditMode) "Edit Feeding" else "Add Feeding") 
-                },
+                title = { },
                 navigationIcon = {
-                    TextButton(onClick = onNavigateBack) {
-                        Text("Cancel")
-                    }
-                },
-                actions = {
-                    if (isEditMode) {
-                        IconButton(
-                            onClick = { showDeleteConfirmation = true },
-                            enabled = !uiState.isLoading
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete event",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate back")
                     }
                 }
             )
@@ -106,7 +92,7 @@ fun AddEatScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Row(
@@ -124,12 +110,12 @@ fun AddEatScreen(
                         Text(
                             text = "Feeding",
                             style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
                             text = "Record a feeding session",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -163,13 +149,13 @@ fun AddEatScreen(
                     )
                 }
             }
-            
+
             // Bottle Amount Section
             Text(
                 text = "Bottle Amount Left",
                 style = MaterialTheme.typography.titleMedium
             )
-            
+
             Text(
                 text = "Select amount remaining in bottle (ml)",
                 style = MaterialTheme.typography.bodyMedium,

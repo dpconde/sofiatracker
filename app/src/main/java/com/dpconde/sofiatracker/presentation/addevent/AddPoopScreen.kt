@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -84,26 +85,11 @@ fun AddPoopScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
-                    Text(if (isEditMode) "Edit Diaper Change" else "Add Diaper Change") 
-                },
+                title = { },
                 navigationIcon = {
-                    TextButton(onClick = onNavigateBack) {
-                        Text("Cancel")
-                    }
-                },
-                actions = {
-                    if (isEditMode) {
-                        IconButton(
-                            onClick = { showDeleteConfirmation = true },
-                            enabled = !uiState.isLoading
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete event",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate back")
                     }
                 }
             )
@@ -141,7 +127,7 @@ fun AddPoopScreen(
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
-                            text = "Record diaper changes and types",
+                            text = "Record diaper changes",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                         )
@@ -178,9 +164,9 @@ fun AddPoopScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = when (type) {
-                                PoopType.WET -> "💧 Wet diaper only"
-                                PoopType.DIRTY -> "💩 Dirty diaper"
-                                PoopType.BOTH -> "🔄 Both wet and dirty"
+                                PoopType.WET -> "💧 Wet"
+                                PoopType.DIRTY -> "💩 Dirty"
+                                PoopType.BOTH -> "💧💩 Both"
                             },
                             style = MaterialTheme.typography.bodyLarge
                         )

@@ -71,9 +71,9 @@ fun MainScreen(
     }
     
     Scaffold(
-        topBar = {
+       /* topBar = {
             CenterAlignedTopAppBar(
-                title = { 
+                title = {
                     Text(
                         "Sofia Tracker",
                         style = MaterialTheme.typography.headlineSmall,
@@ -92,7 +92,7 @@ fun MainScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary
                 )
             )
-        },
+        },*/
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
     ) { paddingValues ->
         if (uiState.isLoading) {
@@ -125,10 +125,11 @@ fun MainScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
+
                 item {
                     WelcomeHeader()
                 }
-
+                
                 item {
                     SyncStatusCard(
                         syncState = uiState.syncState,
@@ -136,7 +137,7 @@ fun MainScreen(
                         onSyncClick = viewModel::triggerSync
                     )
                 }
-                
+
                 item {
                     Text(
                         "Recent Activity",
@@ -261,9 +262,6 @@ fun SyncStatusCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
         shape = RoundedCornerShape(16.dp)
     ) {
         SyncStatusIndicator(
@@ -309,7 +307,7 @@ fun EnhancedEventTypeSection(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .background(containerColor, CircleShape),
+                            .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -335,10 +333,7 @@ fun EnhancedEventTypeSection(
                 
                 Button(
                     onClick = { onAddEvent(eventType) },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = containerColor,
-                        contentColor = onContentColor
-                    ),
+
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.size(40.dp),
                     contentPadding = PaddingValues(0.dp)
@@ -356,9 +351,6 @@ fun EnhancedEventTypeSection(
             // Events List
             if (events.isEmpty()) {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                    ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Box(
@@ -408,7 +400,7 @@ fun EnhancedEventItem(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = containerColor.copy(alpha = 0.15f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
         ),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -440,7 +432,7 @@ fun EnhancedEventItem(
                     if (event.type == EventType.EAT && event.bottleAmountMl != null) {
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer
                             ),
                             shape = RoundedCornerShape(4.dp)
                         ) {
@@ -449,7 +441,7 @@ fun EnhancedEventItem(
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                     }
@@ -463,7 +455,7 @@ fun EnhancedEventItem(
                         }
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer
                             ),
                             shape = RoundedCornerShape(4.dp)
                         ) {
@@ -472,7 +464,7 @@ fun EnhancedEventItem(
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                     }
@@ -482,12 +474,12 @@ fun EnhancedEventItem(
                         val diaperType = when (event.diaperType) {
                             "WET" -> "💧 Wet"
                             "DIRTY" -> "💩 Dirty"
-                            "BOTH" -> "🔄 Both"
+                            "BOTH" -> "💧💩 Both"
                             else -> "💩 Dirty" // Default fallback
                         }
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer
                             ),
                             shape = RoundedCornerShape(4.dp)
                         ) {
@@ -496,7 +488,7 @@ fun EnhancedEventItem(
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                     }

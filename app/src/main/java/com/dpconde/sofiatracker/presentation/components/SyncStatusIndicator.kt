@@ -79,7 +79,7 @@ fun SyncStatusIndicator(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         onClick = if (syncState?.status != SyncStatus.SYNCING) onSyncClick else { {} }
     ) {
@@ -88,34 +88,43 @@ fun SyncStatusIndicator(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(color)
-            )
-            
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                tint = color,
-                modifier = Modifier.size(16.dp)
-            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+
+                if (syncState?.pendingEventsCount ?: 0 > 0) {
+                    Text(
+                        text = "${syncState?.pendingEventsCount}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = color
+                    )
+                }
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = text,
+                    tint = color,
+                    modifier = Modifier.size(16.dp)
+                )
+
+            }
             
             Column {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                
+                Row {
+
+                    Text(
+                        text = "$text - ",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
                 syncState?.lastSuccessfulSync?.let { lastSync ->
                     Text(
                         text = "Last sync: ${lastSync.format(DateTimeFormatter.ofPattern("HH:mm"))}",
@@ -178,12 +187,6 @@ fun CompactSyncStatusIndicator(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(CircleShape)
-                .background(color)
-        )
         
         Icon(
             imageVector = icon,
