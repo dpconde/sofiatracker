@@ -70,36 +70,14 @@ fun MainScreen(
         }
     }
     
-    Scaffold(
-       /* topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Sofia Tracker",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    CompactSyncStatusIndicator(
-                        syncState = uiState.syncState,
-                        isNetworkAvailable = uiState.isNetworkAvailable,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        },*/
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
-    ) { paddingValues ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+    ) {
         if (uiState.isLoading) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -119,9 +97,7 @@ fun MainScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
