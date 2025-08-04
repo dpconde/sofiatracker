@@ -22,7 +22,7 @@ fun SofiaTrackerNavigation(
         startDestination = SofiaTrackerScreens.Main.route
     ) {
         composable(SofiaTrackerScreens.Main.route) {
-            MainScreen(
+            MainNavigationScreen(
                 onNavigateToAddEvent = { eventType ->
                     when (eventType) {
                         EventType.SLEEP -> navController.navigate(SofiaTrackerScreens.AddSleep.route)
