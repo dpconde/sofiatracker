@@ -1,12 +1,16 @@
 package com.dpconde.sofiatracker.presentation.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -21,48 +25,29 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    
+
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+
+        Row {
+            Spacer(Modifier.weight(1f))
+            Button(
+                   onClick = {
+                    keyboardController?.hide()
+                    viewModel.saveBabyName()
+                },
+                enabled = !uiState.isLoading && uiState.babyName.isNotBlank()
             ) {
-                Text(
-                    text = "⚙️",
-                    style = MaterialTheme.typography.displaySmall
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Text(
-                    text = "Settings",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                
-                Text(
-                    text = "Customize your app experience",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
-                )
+                Text("SAVE")
             }
         }
-        
+
+
+
         // Baby Name Form Card
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -81,11 +66,11 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                
+
                 OutlinedTextField(
                     value = uiState.babyName,
                     onValueChange = viewModel::updateBabyName,
-                    label = { Text("My Baby's Name") },
+                    label = { Text("Name") },
                     placeholder = { Text("Sofía") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -98,25 +83,7 @@ fun SettingsScreen(
                     ),
                     enabled = !uiState.isLoading
                 )
-                
-                Button(
-                    onClick = {
-                        keyboardController?.hide()
-                        viewModel.saveBabyName()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !uiState.isLoading && uiState.babyName.isNotBlank()
-                ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Text(if (uiState.isLoading) "Saving..." else "Save")
-                }
-                
+
                 uiState.error?.let { error ->
                     Card(
                         colors = CardDefaults.cardColors(

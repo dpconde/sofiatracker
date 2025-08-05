@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetBabyNameUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) {
-    operator fun invoke(): Flow<String> {
-        return settingsRepository.getBabyName()
-    }
+
+    operator fun invoke() =  settingsRepository.getBabyName()
+
 }
