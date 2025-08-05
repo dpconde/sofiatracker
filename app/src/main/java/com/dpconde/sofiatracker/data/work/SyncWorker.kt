@@ -30,16 +30,11 @@ class SyncWorker @AssistedInject constructor(
             val syncResult = syncManager.performFullSync().first { result ->
                 result is SyncResult.Success || result is SyncResult.Error
             }
-            
+
             when (syncResult) {
-                is SyncResult.Success -> {
-                    Result.success()
-                }
-                is SyncResult.Error -> {
-                    // Retry on error, but with exponential backoff
-                    Result.retry()
-                }
-                else -> Result.retry()
+                is SyncResult.Success -> Result.success()
+                is SyncResult.Error -> Result.retry()
+                else -> Result.retry() //TODO: refactor. Not reachable option
             }
         } catch (e: Exception) {
             Result.failure()

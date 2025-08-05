@@ -103,7 +103,7 @@ fun MainScreen(
             ) {
 
                 item {
-                    WelcomeHeader()
+                    WelcomeHeader(babyName = uiState.babyName)
                 }
                 
                 item {
@@ -169,7 +169,7 @@ fun MainScreen(
 }
 
 @Composable
-fun WelcomeHeader() {
+fun WelcomeHeader(babyName: String = "Sofía") {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -218,7 +218,7 @@ fun WelcomeHeader() {
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Text(
-                            text = "Track Sofia's daily activities",
+                            text = "Track $babyName's daily activities",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )

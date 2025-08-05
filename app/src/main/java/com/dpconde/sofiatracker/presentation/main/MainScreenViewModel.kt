@@ -8,6 +8,7 @@ import com.dpconde.sofiatracker.domain.model.Event
 import com.dpconde.sofiatracker.domain.model.EventType
 import com.dpconde.sofiatracker.domain.repository.EventRepository
 import com.dpconde.sofiatracker.domain.usecase.GetRecentEventsByTypeUseCase
+import com.dpconde.sofiatracker.domain.usecase.GetBabyNameUseCase
 import kotlinx.coroutines.delay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val getRecentEventsByTypeUseCase: GetRecentEventsByTypeUseCase,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val getBabyNameUseCase: GetBabyNameUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(MainScreenUiState())
@@ -34,23 +36,29 @@ class MainScreenViewModel @Inject constructor(
     
     private fun loadRecentEvents() {
         viewModelScope.launch {
-            combine(
-                getRecentEventsByTypeUseCase(EventType.SLEEP),
-                getRecentEventsByTypeUseCase(EventType.EAT),
-                getRecentEventsByTypeUseCase(EventType.POOP),
-                eventRepository.getSyncState()
-            ) { sleepEvents, eatEvents, poopEvents, syncState ->
-                MainScreenUiState(
-                    recentSleepEvents = sleepEvents,
-                    recentEatEvents = eatEvents,
-                    recentPoopEvents = poopEvents,
-                    syncState = syncState,
-                    isNetworkAvailable = eventRepository.isNetworkAvailable(),
-                    pendingSyncCount = try { eventRepository.getPendingSyncCount() } catch (e: Exception) { 0 },
-                    isLoading = false
-                )
-            }.collect { newState ->
-                _uiState.value = newState
+            try {
+                combine(
+                    getBabyNameUseCase(),
+                    getRecentEventsByTypeUseCase(EventType.SLEEP),
+                    getRecentEventsByTypeUseCase(EventType.EAT),
+                    getRecentEventsByTypeUseCase(EventType.POOP),
+                    eventRepository.getSyncState()
+                ) { babyName, sleepEvents, eatEvents, poopEvents, syncState ->
+                    MainScreenUiState(
+                        babyName = babyName,
+                        recentSleepEvents = sleepEvents,
+                        recentEatEvents = eatEvents,
+                        recentPoopEvents = poopEvents,
+                        syncState = syncState,
+                        isNetworkAvailable = eventRepository.isNetworkAvailable(),
+                        pendingSyncCount = try { eventRepository.getPendingSyncCount() } catch (e: Exception) { 0 },
+                        isLoading = false
+                    )
+                }.collect { newState ->
+                    _uiState.value = newState
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
     }
@@ -80,9 +88,11 @@ class MainScreenViewModel @Inject constructor(
             }
         }
     }
+    
 }
 
 data class MainScreenUiState(
+    val babyName: String = "Sofía",
     val recentSleepEvents: List<Event> = emptyList(),
     val recentEatEvents: List<Event> = emptyList(),
     val recentPoopEvents: List<Event> = emptyList(),
