@@ -21,4 +21,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "Sofia Tracker"
 include(":app")
- 
+include(":core:ui")
+include(":core:designsystem")
+include(":feature:statistics")
+include(":core:datastore")
+include(":core:database")
+include(":core:network")
+include(":feature:home")
+include(":feature:settings")
+include(":core:domain")
+include(":core:data")
+include(":core:model")
