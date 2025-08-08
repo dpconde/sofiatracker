@@ -19,16 +19,20 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Sofia Tracker"
+rootProject.name = "SofiaTracker"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(":app")
 include(":core:ui")
 include(":core:designsystem")
-include(":feature:statistics")
 include(":core:datastore")
 include(":core:database")
 include(":core:network")
-include(":feature:home")
-include(":feature:settings")
 include(":core:domain")
 include(":core:data")
 include(":core:model")
+include(":core:common")
+
+include(":feature:home")
+include(":feature:settings")
+include(":feature:statistics")

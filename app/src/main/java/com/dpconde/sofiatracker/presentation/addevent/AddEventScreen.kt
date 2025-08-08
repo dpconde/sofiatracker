@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dpconde.sofiatracker.domain.model.EventType
-import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
+import com.dpconde.sofiatracker.core.designsystem.theme.SofiaTrackerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

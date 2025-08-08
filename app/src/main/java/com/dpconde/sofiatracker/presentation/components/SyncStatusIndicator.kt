@@ -1,8 +1,6 @@
 package com.dpconde.sofiatracker.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
@@ -12,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -20,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dpconde.sofiatracker.data.local.entity.SyncStateEntity
 import com.dpconde.sofiatracker.domain.model.SyncStatus
-import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
+import com.dpconde.sofiatracker.core.designsystem.theme.SofiaTrackerTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

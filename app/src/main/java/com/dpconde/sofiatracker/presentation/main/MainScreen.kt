@@ -24,9 +24,8 @@ import com.dpconde.sofiatracker.data.local.entity.SyncStateEntity
 import com.dpconde.sofiatracker.domain.model.Event
 import com.dpconde.sofiatracker.domain.model.EventType
 import com.dpconde.sofiatracker.domain.model.SyncStatus
-import com.dpconde.sofiatracker.presentation.components.CompactSyncStatusIndicator
 import com.dpconde.sofiatracker.presentation.components.SyncStatusIndicator
-import com.dpconde.sofiatracker.ui.theme.SofiaTrackerTheme
+import com.dpconde.sofiatracker.core.designsystem.theme.SofiaTrackerTheme
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
