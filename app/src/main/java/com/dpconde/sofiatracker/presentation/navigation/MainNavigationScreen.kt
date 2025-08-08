@@ -11,11 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.dpconde.sofiatracker.presentation.main.MainScreen
-import com.dpconde.sofiatracker.presentation.statistics.StatisticsScreen
-import com.dpconde.sofiatracker.presentation.settings.SettingsScreen
-import com.dpconde.sofiatracker.domain.model.EventType
-import com.dpconde.sofiatracker.domain.usecase.GetBabyNameUseCase
+import com.dpconde.sofiatracker.core.model.Event
+import com.dpconde.sofiatracker.core.model.EventType
+import com.dpconde.sofiatracker.core.domain.GetBabyNameUseCase
+import com.dpconde.sofiatracker.feature.home.HomeScreen
+import com.dpconde.sofiatracker.feature.settings.SettingsScreen
+import com.dpconde.sofiatracker.feature.statistics.StatisticsScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class MainNavigationViewModel @Inject constructor(
 @Composable
 fun MainNavigationScreen(
     onNavigateToAddEvent: (EventType) -> Unit,
-    onNavigateToEditEvent: (com.dpconde.sofiatracker.domain.model.Event) -> Unit,
+    onNavigateToEditEvent: (Event) -> Unit,
     viewModel: MainNavigationViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -86,7 +87,7 @@ fun MainNavigationScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(BottomNavItem.Home.route) {
-                MainScreen(
+                HomeScreen(
                     onNavigateToAddEvent = onNavigateToAddEvent,
                     onNavigateToEditEvent = onNavigateToEditEvent
                 )

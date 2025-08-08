@@ -4,15 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.dpconde.sofiatracker.data.remote.FirebaseConnectionChecker
-import com.dpconde.sofiatracker.data.sync.SyncManager
-import com.dpconde.sofiatracker.data.work.SyncWorkManager
+import com.dpconde.sofiatracker.core.data.work.SyncWorkManager
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -24,11 +21,11 @@ class SofiaTrackerApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var syncWorkManager: SyncWorkManager
     
-    @Inject
-    lateinit var firebaseConnectionChecker: FirebaseConnectionChecker
+    //@Inject
+    //lateinit var firebaseConnectionChecker: FirebaseConnectionChecker
     
     @Inject
-    lateinit var syncManager: SyncManager
+    lateinit var syncManager: com.dpconde.sofiatracker.core.data.sync.SyncManager
     
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     
