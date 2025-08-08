@@ -22,6 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = "SofiaTracker"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+includeBuild("build-logic")
+
 include(":app")
 include(":core:ui")
 include(":core:designsystem")
